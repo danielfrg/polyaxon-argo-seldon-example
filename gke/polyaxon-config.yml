@@ -1,0 +1,24 @@
+rbac:
+  enabled: true
+
+ingress:
+  enabled: true
+
+serviceType: ClusterIP
+
+persistence:
+  logs:
+    existingClaim: polyaxon-pvc-logs
+  repos:
+    existingClaim: polyaxon-pvc-repos
+  upload:
+    existingClaim: polyaxon-pvc-upload
+
+  data:
+    data1:
+      existingClaim: polyaxon-pvc-data
+      mountPath: /data
+  outputs:
+    outputs1:
+      existingClaim: polyaxon-pvc-outputs
+      mountPath: /outputs

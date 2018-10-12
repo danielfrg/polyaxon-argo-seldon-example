@@ -1,0 +1,9 @@
+---
+version: 1
+
+kind: notebook
+
+build:
+  image: python:3
+  build_steps:
+    - pip3 install jupyter

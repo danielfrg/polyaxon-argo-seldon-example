@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter
+  labels:
+    app: jupyter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jupyter
+  template:
+    metadata:
+      labels:
+        app: jupyter
+    spec:
+      containers:
+      - name: jupyter
+        image: jupyter/datascience-notebook
+        command: ["start-notebook.sh"]
+        args: ["--NotebookApp.token="]
+        env:
+        - name: JUPYTER_ENABLE_LAB
+          value: "1"
+        ports:
+        - containerPort: 8888
+        volumeMounts:
+        - mountPath: /home/jovyan
+          name: work-volume
+        - mountPath: /output
+          name: outputs-volume
+      volumes:
+      - name: work-volume
+        persistentVolumeClaim:
+          claimName: polyaxon-pvc-repos
+      - name: outputs-volume
+        persistentVolumeClaim:
+          claimName: polyaxon-pvc-outputs
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jupyter
+spec:
+  selector:
+    app: jupyter
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8888

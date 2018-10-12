@@ -1,0 +1,34 @@
+---
+version: 1
+
+kind: group
+
+hptuning:
+  concurrency: 5
+  random_search:
+    n_experiments: 10
+
+  matrix:
+    lr:
+      linspace: 0.001:0.1:5
+    momentum:
+      uniform: 0.5:0.6
+
+declarations:
+  batch_size_train: 128
+  batch_size_test: 1000
+  epochs: 5
+  train_steps: 400
+
+build:
+ image: pytorch/pytorch:latest
+ build_steps:
+   - pip install --no-cache-dir -U polyaxon-helper
+
+run:
+  cmd: python run.py  --batch-size={{ batch_size_train }} \
+                       --test-batch-size={{ batch_size_test }} \
+                       --epochs={{ epochs }} \
+                       --lr={{ lr }} \
+                       --momentum={{ momentum }} \
+                       --epochs={{ epochs }}
