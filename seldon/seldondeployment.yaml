@@ -1,0 +1,25 @@
+apiVersion: machinelearning.seldon.io/v1alpha2
+kind: SeldonDeployment
+metadata:
+  name: mnist
+  labels:
+    app: seldon
+  namespace: seldon
+spec:
+  name: mnist
+  predictors:
+  - componentSpecs:
+    - spec:
+        containers:
+        - image: danielfrg/seldon-mnist:0.2
+          imagePullPolicy: Always
+          name: classifier
+    graph:
+      endpoint:
+        type: REST
+      name: classifier
+      type: MODEL
+    labels:
+      version: v1
+    name: mnist
+    replicas: 1

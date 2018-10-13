@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: argo-pv-repos
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.240.0.8  # Use the right IP
+    path: "/data/repos/deployments"
+  claimRef:
+    namespace: argo 
+    name: argo-pvc-repos
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: argo-pvc-repos
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi

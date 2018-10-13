@@ -3,26 +3,38 @@ kind: Workflow
 metadata:
   generateName: model-pkg-
 spec:
-  entrypoint: model-pkg-mnist
+  entrypoint: model-pkg
   
   volumes:
-  # Pass my-existing-volume as an argument to the volumes-existing-example template
-  # Same syntax as k8s Pod spec
   - name: work-volume
     persistentVolumeClaim:
-    claimName: polyaxon-pvc-repos
+      claimName: argo-pvc-repos
+  - name: docker-sock-volume
+    hostPath:
+      path: /var/run/docker.sock
+  - name: docker-config
+    secret:
+      secretName: regcred
+      items:
+      - key: .dockerconfigjson
+        path: config.json
 
   templates:
   - name: model-pkg
     steps:
-    - - name: generate
+    - - name: s2i-push
         template: s2i
 
   - name: s2i
     container:
-      image: danielfrg/s2i:1.0
+      image: danielfrg/s2i:0.1
       command: ["sh", "-c"]
-      args: [""]
+      args: ["s2i build /src/mnist seldonio/seldon-core-s2i-python3 danielfrg/seldon-mnist:0.2 && docker push danielfrg/seldon-mnist:0.2"]
       volumeMounts:
-      - name: workdir
+      - name: work-volume
         mountPath: /src
+      - name: docker-sock-volume
+        mountPath: /var/run/docker.sock
+      - name: docker-config
+        mountPath: /root/.docker
+        readOnly: true
